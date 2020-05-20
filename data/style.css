@@ -1,0 +1,15 @@
+*{font-size:xx-large;font-family:'Ubuntu','Arial',monospace;}
+body{text-align:center;}
+h1{background:#D0D0D0;}
+h1.OK{background:#00FF00;}
+h1.FAIL{background:#FF0000;}
+a{color:#000000;text-decoration:none;}
+a:hover{color:#FF7F00;}
+div,input{padding:5px;font-size:1em;}
+input{width:85%; border-radius: 0%;color:#000000}
+input:hover{background:#FF7F00;}
+button{border:0;border-radius:0.3rem;background-color:#ff7F00;color:#fFFFff;line-height:2.4rem;font-size:1.2rem;width:100%;}
+.c{text-align:center;}
+.q{float:right;width:64px;text-align:right;}
+.content{max-width:750px;margin:auto;padding:0px;}
+.cr{font-size:medium;}
