@@ -36,6 +36,13 @@ With the menu `Show map files` in the service menu you can have a look at the ex
 ### Upload map files
 The menu `Upload map files` allows it to select a map file and upload it.
 
+## LED colors
+A RGB-LED shows the different states of the esp device:
+- RED: not connected to WLAN, error reading configuration, short before reboot
+- YELLOW: success reading configuration
+- BLUE; web server called
+- MAGENTA: no artnet data for more than a second
+- GREEN: everything ok
 
 # ATTENTION
 **When calling the web interface, dmx output might stop for some seconds.  
@@ -66,7 +73,7 @@ After compiling upload the `firmware.bin`.
 Then you have to upload the file system image. This uploads the files of the `data` directory. These files are important for the web server and contain some examples for dmxmapping.  
 If you want to use the funktions of [dmxmapping](https://github.com/Lutzion/dmxmapping), change the `*.map` files according to your needs.  
   
-  
+
 
 # DISCLAIMER
 
