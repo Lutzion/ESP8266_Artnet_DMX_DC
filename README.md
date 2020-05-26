@@ -64,4 +64,11 @@ If you use another one, change settings in `platformio.ini`.
 
 After compiling upload the `firmware.bin`.
 Then you have to upload the file system image. This uploads the files of the `data` directory. These files are important for the web server and contain some examples for dmxmapping.  
-If you want to use the funktions of dmxmapping, change the `*.map` files according to your needs. 
+If you want to use the funktions of [dmxmapping](https://github.com/Lutzion/dmxmapping), change the `*.map` files according to your needs.  
+  
+  
+
+# DISCLAIMER
+
+**THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
+
