@@ -6,6 +6,7 @@
 */
 
 #include "webserverAndOta.h"
+#include "esp8266_artnet_dmx_dc.h"
 
 #include <list>
 
@@ -145,11 +146,15 @@ bool saveConfig()
 // do the outstanding web server tasks
 void finalizeWebServer(uint16_t iDelay)
 {
+  LedBlue() ;
+
   for(uint16_t i = 0; i < (iDelay / 100); i++)
   {
     server.handleClient();
     delay(100);
   }
+
+  LedRed() ;
 }
 
 // Functions for (map)file uploads
@@ -164,7 +169,10 @@ void handleMapUploadFn()
 
 void handleMapUploadUpload(){ // upload a new file to the SPIFFS
   HTTPUpload& upload = server.upload();
-  if(upload.status == UPLOAD_FILE_START){
+  if(upload.status == UPLOAD_FILE_START)
+  {
+    LedBlue() ;
+
     String filename = upload.filename;
     if(!filename.startsWith("/")) filename = "/"+filename;
     Serial.print("handleFileUpload Name: "); Serial.println(filename);
@@ -210,7 +218,10 @@ void handleFwUpdateFn()
 
 void handleFwUpdateUpload() {
   HTTPUpload& upload = server.upload();
-  if (upload.status == UPLOAD_FILE_START) {
+  if (upload.status == UPLOAD_FILE_START)
+  {
+    LedBlue() ;
+
     Serial.setDebugOutput(true);
     WiFiUDP::stopAll();
     Serial.printf("Update: %s\n", upload.filename.c_str());

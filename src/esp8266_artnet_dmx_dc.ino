@@ -39,9 +39,10 @@ const char* host = "ARTNET";
 
 const char* version = __DATE__ " / " __TIME__;
 
-#define LED_B 16  // GPIO16/D0
-#define LED_G 5   // GPIO05/D1
-#define LED_R 4   // GPIO04/D2
+// ALL LED Pins on one site of wemos d1 mini
+#define LED_R 14  // GPIO14/D5
+#define LED_G 12  // GPIO12/D6
+#define LED_B 13  // GPIO13/D7
 
 #ifdef COMMON_ANODE
 #define ON  0
@@ -68,7 +69,57 @@ struct
 } global;
 
 // keep track of the timing of the function calls
-uint64_t tic_loop = 0, tic_fps = 0, tic_packet = 0, tic_web = 0;
+uint64_t tic_loop = 0, tic_fps = 0, tic_packet = 0, tic_web = 0, tic_dmx = 0 ;
+
+// LEDs
+void LedBlack()
+{
+  digitalWrite(LED_R, OFF);
+  digitalWrite(LED_G, OFF);
+  digitalWrite(LED_B, OFF);
+}
+
+void LedRed()
+{
+  digitalWrite(LED_R, ON);
+  digitalWrite(LED_G, OFF);
+  digitalWrite(LED_B, OFF);
+}
+
+void LedGreen()
+{
+  digitalWrite(LED_R, OFF);
+  digitalWrite(LED_G, ON);
+  digitalWrite(LED_B, OFF);
+}
+
+void LedBlue()
+{
+  digitalWrite(LED_R, OFF); 
+  digitalWrite(LED_G, OFF);
+  digitalWrite(LED_B, ON);
+}
+
+void LedYellow()
+{
+  digitalWrite(LED_R, ON);
+  digitalWrite(LED_G, ON);
+  digitalWrite(LED_B, OFF);
+}
+
+void LedMagenta()
+{
+  digitalWrite(LED_R, ON);
+  digitalWrite(LED_G, OFF);
+  digitalWrite(LED_B, ON);
+}
+
+void LedCyan()
+{
+  digitalWrite(LED_R, OFF);
+  digitalWrite(LED_G, ON);
+  digitalWrite(LED_B, ON);
+}
 
 //this will be called for each UDP packet received
 void onDmxPacket(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t * data)
@@ -104,6 +155,8 @@ void onDmxPacket(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t *
 
   // print some feedback
   packetCounter++ ;
+  tic_packet = millis();
+
   //Serial.print("pkt=");
   //Serial.print(packetCounter++);
   if ((millis() - tic_fps) > 1000 ||
@@ -172,6 +225,12 @@ void onDmxPacket(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t *
 
 void setup()
 {
+  // leds off on start
+  pinMode(LED_R, OUTPUT);
+  pinMode(LED_G, OUTPUT);
+  pinMode(LED_B, OUTPUT);
+  LedBlack() ;
+
   Serial1.begin(250000, SERIAL_8N2);
   Serial.begin(115200);
   while (!Serial) {
@@ -186,9 +245,7 @@ void setup()
 #endif
   Serial.println("setup starting");
 #endif
-  pinMode(LED_R, OUTPUT);
-  pinMode(LED_G, OUTPUT);
-  pinMode(LED_B, OUTPUT);
+
 
   global.universe = 0;
   global.sequence = 0;
@@ -212,17 +269,18 @@ void setup()
 
   initialConfig();
 
-  if (loadConfig()) {
-    singleYellow();
-    delay(1000);
+  if (loadConfig())
+  {
+    LedYellow();
   }
-  else {
-    singleRed();
-    delay(1000);
+  else
+  {
+    LedRed();
   }
+  delay(1000);
 
   if (WiFi.status() != WL_CONNECTED)
-    singleRed();
+    LedRed();
 
   WiFiManager wifiManager;
   // wifiManager.resetSettings();
@@ -235,7 +293,7 @@ void setup()
 #endif
 
   if (WiFi.status() == WL_CONNECTED)
-    singleGreen();
+    LedGreen();
 
 #ifdef ENABLE_WEBINTERFACE
   // this serves all URIs that can be resolved to a file on the SPIFFS filesystem
@@ -258,7 +316,7 @@ void setup()
 #endif
     handleStaticFile("/success.html");
     delay(2000);
-    singleRed();
+    LedRed();
     initialConfig();
     saveConfig();
     WiFiManager wifiManager;
@@ -276,7 +334,7 @@ void setup()
 #endif
     handleStaticFile("/success.html");
     delay(2000);
-    singleRed();
+    LedRed();
     WiFiManager wifiManager;
     wifiManager.setAPStaticIPConfig(IPAddress(192, 168, 1, 1), IPAddress(192, 168, 1, 1), IPAddress(255, 255, 255, 0));
     wifiManager.startConfigPortal(host);
@@ -284,7 +342,7 @@ void setup()
     Serial.println("connected");
   #endif
     if (WiFi.status() == WL_CONNECTED)
-      singleGreen();
+      LedGreen();
   });
 
   server.on("/reset", HTTP_GET, []() {
@@ -293,7 +351,7 @@ void setup()
     Serial.println("handleReset");
 #endif
     handleStaticFile("/success.html");
-    singleRed();
+    LedRed();
     finalizeWebServer(2000) ;
     ESP.restart();
   });
@@ -398,6 +456,7 @@ void setup()
   tic_packet = millis();
   tic_fps    = millis();
   tic_web    = 0;
+  tic_dmx    = millis();
 
 #ifdef VERBOSE
   Serial.println("setup done");
@@ -417,24 +476,39 @@ void loop()
 {
   server.handleClient();
 
-  if (WiFi.status() != WL_CONNECTED) {
-    singleRed();
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    LedRed();
     //delay(10);
     yield() ;
   }
-  else if ((millis() - tic_web) < 2000) {
-    singleBlue();
+  else if ((millis() - tic_web) < 2000)
+  {
+    LedBlue();
     //delay(25);
     yield() ;
   }
-  else  {
-    singleGreen();
+  else
+  {
     artnet.read();
 
-    // this section gets executed at a maximum rate of around 40Hz (depending on config.delay)
-    if ((millis() - tic_loop) > config.delay)
+    tic_loop = millis() ;
+
+    if (tic_loop - tic_packet < 1000)
     {
-      tic_loop = millis();
+      // last packet receive within one second -> green
+      LedGreen();
+    }
+    else
+    {
+      // last packet receive more than one second ago -> yellow
+      LedMagenta();
+    }
+
+    // this section gets executed at a maximum rate of around 40Hz (depending on config.delay)
+    if ((tic_loop - tic_dmx) > config.delay)
+    {
+      tic_dmx = millis();
       frameCounter++;
 
       sendBreak();
@@ -452,33 +526,3 @@ void loop()
   yield() ;
 } // loop
 
-
-void singleRed() {
-  digitalWrite(LED_R, ON);
-  digitalWrite(LED_G, OFF);
-  digitalWrite(LED_B, OFF);
-}
-
-void singleGreen() {
-  digitalWrite(LED_R, OFF);
-  digitalWrite(LED_G, ON);
-  digitalWrite(LED_B, OFF);
-}
-
-void singleBlue() {
-  digitalWrite(LED_R, OFF); 
-  digitalWrite(LED_G, OFF);
-  digitalWrite(LED_B, ON);
-}
-
-void singleYellow() {
-  digitalWrite(LED_R, ON);
-  digitalWrite(LED_G, ON);
-  digitalWrite(LED_B, OFF);
-}
-
-void allBlack() {
-  digitalWrite(LED_R, OFF);
-  digitalWrite(LED_G, OFF);
-  digitalWrite(LED_B, OFF);
-}

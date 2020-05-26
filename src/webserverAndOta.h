@@ -5,8 +5,8 @@
  https://github.com/Lutzion/
 */
 
-#ifndef _SETUP_OTA_H_
-#define _SETUP_OTA_H_
+#ifndef _WEBSERVER_AND_OTA_H_
+#define _WEBSERVER_AND_OTA_H_
 
 #ifdef LITTLEFS
 #include <LittleFS.h>
@@ -65,4 +65,4 @@ class file
     time_t creationTime;
 };
 
-#endif // _SETUP_OTA_H_
+#endif // _WEBSERVER_AND_OTA_H_
