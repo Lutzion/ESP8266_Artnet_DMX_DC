@@ -48,9 +48,15 @@ bool initialConfig()
 {
   config.universe = 0;
   config.channels = 512;
-  config.delay = 25;
+  config.delay = 23;
   config.useMaps = 0 ;
   config.mapChan = 0 ;
+
+  config.startDelay = 60 ;
+  config.e131Start = 1;
+  config.e131Unicast = 0 ;
+  config.psk[0] = 0 ;  // empty string
+
   return true;
 }
 
@@ -101,6 +107,10 @@ bool loadConfig()
   JSON_TO_CONFIG(delay, "delay");
   JSON_TO_CONFIG(useMaps, "useMaps");
   JSON_TO_CONFIG(mapChan, "mapChan");
+  JSON_TO_CONFIG(startDelay, "startDelay");
+  JSON_TO_CONFIG(e131Start, "e131Start");
+  JSON_TO_CONFIG(e131Unicast, "e131Unicast");
+  S_JSON_TO_CONFIG(psk, "psk");
 
   return true;
 }
@@ -117,6 +127,10 @@ bool saveConfig()
   CONFIG_TO_JSON(delay, "delay");
   CONFIG_TO_JSON(useMaps, "useMaps");
   CONFIG_TO_JSON(mapChan, "mapChan");
+  CONFIG_TO_JSON(startDelay, "startDelay");
+  CONFIG_TO_JSON(e131Start, "e131Start");
+  CONFIG_TO_JSON(e131Unicast, "e131Unicast");
+  S_CONFIG_TO_JSON(psk, "psk");
 
 #ifdef LITTLEFS
   File configFile = LittleFS.open("/config.json", "w");
@@ -259,11 +273,29 @@ bool compareFiles(file& first, file& second)
 // handleDirList()
 // if mapOnly = true -> show only files related to dmxmapping
 // files to list, sort list, print list, clear list
-void handleDirList(bool mapOnly)
+void handleDirList(bool mapOnly, String argDelete)
 {
 #ifdef VERBOSE
   Serial.println("handleDirList");
 #endif
+
+  if (argDelete.length() > 0)
+  {
+    //Serial.println("handleDirList -> Loesche <" + argDelete + ">");
+
+#ifdef LITTLEFS
+    if (LittleFS.exists(argDelete))
+    {
+      LittleFS.remove(argDelete);
+    }
+#else
+    if (SPIFFS.exists(argDelete))
+    {
+      //Serial.println("remove <" + argDelete + ">");
+      SPIFFS.remove(argDelete);
+    }
+#endif
+  }
 
   lstFile = std::list<file>();
 
@@ -279,7 +311,7 @@ void handleDirList(bool mapOnly)
                 "<h1>Directory <a href='/'>&lt;&lt;&lt;</a></h1>"
 
                 "<table align='center'>"
-                "<tr><th>Name</th><th>[bytes]</th></tr>";
+                "<tr><th>Name</th><th>[bytes]</th></tr>\n";
 
 #ifdef LITTLEFS
   Dir dir = LittleFS.openDir("/");
@@ -299,8 +331,8 @@ void handleDirList(bool mapOnly)
       file f = file() ;
       f.name = dir.fileName() ;
       f.size = dir.fileSize();
-      f.time = dir.fileTime();
-      f.creationTime = dir.fileCreationTime();
+      //f.time = dir.fileTime();
+      //f.creationTime = dir.fileCreationTime();
       lstFile.push_back(f) ;
       /*
       str = str + "<tr><td align='left'><a href=" + dir.fileName() + ">" + dir.fileName() + 
@@ -314,7 +346,9 @@ void handleDirList(bool mapOnly)
   for (std::list<file>::iterator it=lstFile.begin() ; it != lstFile.end(); ++it)
   {
     str = str + "<tr><td align='left'><a href=" + (*it).name + ">" + (*it).name + 
-          "</a></td><td align='right'>" + (*it).size + "</td></tr>" ;
+          "</a></td><td align='right'>" + (*it).size + 
+          (mapOnly ? "&nbsp;&nbsp;<a class='del' href='?delete=" + (*it).name + "' onclick='return confirm(\"Do you want to delete &lt;" + (*it).name + "&gt; ?\");'> X</a>" : "") +
+          "</td></tr>\n" ;
   }
 
   lstFile.clear() ;
@@ -448,6 +482,10 @@ void handleJSON() {
     JSON_TO_CONFIG(delay, "delay");
     JSON_TO_CONFIG(useMaps, "useMaps");
     JSON_TO_CONFIG(mapChan, "mapChan");
+    JSON_TO_CONFIG(startDelay, "startDelay");
+    JSON_TO_CONFIG(e131Start, "e131Start");
+    JSON_TO_CONFIG(e131Unicast, "e131Unicast");
+    S_JSON_TO_CONFIG(psk, "psk");
     handleStaticFile("/success.html");
   }
   else {
@@ -457,6 +495,10 @@ void handleJSON() {
     KEYVAL_TO_CONFIG(delay, "delay");
     KEYVAL_TO_CONFIG(useMaps, "useMaps");
     KEYVAL_TO_CONFIG(mapChan, "mapChan");
+    KEYVAL_TO_CONFIG(startDelay, "startDelay");
+    KEYVAL_TO_CONFIG(e131Start, "e131Start");
+    KEYVAL_TO_CONFIG(e131Unicast, "e131Unicast");
+    S_KEYVAL_TO_CONFIG(psk, "psk");
     handleStaticFile("/success.html");
   }
   saveConfig();

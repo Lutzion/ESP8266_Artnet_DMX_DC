@@ -25,7 +25,8 @@
 #define KEYVAL_TO_CONFIG(x, y) { if (server.hasArg(y))    { String str = server.arg(y); config.x = str.toInt(); } }
 
 #define S_JSON_TO_CONFIG(x, y)   { if (root.containsKey(y)) { strcpy(config.x, root[y]); } }
-#define S_CONFIG_TO_JSON(x, y)   { root.set(y, config.x); }
+// https://github.com/bblanchon/ArduinoJson/issues/1038
+#define S_CONFIG_TO_JSON(x, y)   { /*root.set(y, config.x);*/ root[y] = config.x; }
 #define S_KEYVAL_TO_CONFIG(x, y) { if (server.hasArg(y))    { String str = server.arg(y); strcpy(config.x, str.c_str()); } }
 
 bool initialConfig(void);
@@ -38,7 +39,7 @@ void handleMapUploadFn(void);
 void handleMapUploadUpload(void);
 void handleFwUpdateFn(void);
 void handleFwUpdateUpload(void);
-void handleDirList(bool);
+void handleDirList(bool, String);
 void handleNotFound(void);
 void handleRedirect(String);
 void handleRedirect(const char *);
@@ -54,6 +55,10 @@ struct Config
   uint16_t delay = 25 ; 
   uint8_t useMaps = 0;
   uint16_t mapChan = 0;
+  uint16_t startDelay = 60 ;
+  uint8_t e131Start = 1;
+  uint8_t e131Unicast = 0 ;
+  char psk[64] = "" ;
 };
 
 class file
