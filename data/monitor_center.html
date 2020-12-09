@@ -10,18 +10,21 @@
 <body onload="javascript:startWS();">
 <div class="content">
 <h1>Monitor <a href="/">&lt;&lt;&lt;</a></h1>
-<!--
 Firmware version: 
 <div id="version" name="version">?</div>
--->
-<table>
-    <tr><td>Firmware version:</td><td><div id="version" name="version">?</div></td></tr>
-    <tr><td>Uptime:</td><td><div id="uptime" name="uptime">?</div></td></tr>
-    <tr><td>Packets received:</td><td><div id="packets" name="packets">?</div></td></tr>
-    <tr><td>Sequence errors:</td><td><div id="seqErr" name="seqErr">?</div></td></tr>
-    <tr><td>Frames / second:</td><td><div id="fps" name="fps">?</div></td></tr>
-</table>
+Uptime: 
+<div id="uptime" name"uptime">?</div>
+Packets received: 
+<div id="packets" name="packets">?</div>
+Sequence errors: 
+<div id="seqErr" name="seqErr">?</div>
+Frames per second: 
+<div id="fps" name="fps">?</div>
 <button onClick="window.location.reload();">Refresh</button>
+
+<!--
+<script language="javascript" type="text/javascript" src="monitor.js"></script>
+-->
 </div>
 </body>
 </html>

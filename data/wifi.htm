@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<title>EESP Artnet DMX - WiFi</title>
+	
+	<link href="style.css" rel="stylesheet" type="text/css">
+	
+	<script>
+		function g(i){return document.getElementById(i);};
+		function p(t,l){if(confirm(t)) window.location=l;};
+		function E(s){return document.createElement(s)};
+		var S="setAttribute",A="appendChild",H="innerHTML",X,wl;
+		function scan(){
+			if(X) return;
+			X=new XMLHttpRequest(),wl=document.getElementById('wl');
+			wl[H]="Scanning...";
+			X.onreadystatechange=function(){
+				if (this.readyState==4&&this.status==200) {
+					X=0;
+					wl[H]="";
+					this.responseText.split("\n").forEach(function (e) {
+						let t=e.split(","), s=t.slice(2).join(',');
+						var d=E('div'),i=E('a'),c=E('a');
+						i[S]('class','s'); c[S]('class','q');
+						i.onclick=function(){g('s').value=s;g('p').focus();};
+						i[A](document.createTextNode(s));
+						c[H]=t[0]+"%"+(parseInt(t[1])?"\uD83D\uDD12":"\u26A0");
+						wl[A](i); wl[A](c);
+						wl[A](document.createElement('br'));
+					});
+				}
+			};
+			X.open("GET","wifi/list",true);
+			X.send();
+		};
+	</script>
+<style>
+	.q{float:right;width:128px;text-align:right;}
+</style>
+
+</head>
+
+<body>
+	<div style='text-align:left;display:inline-block;width:640px;padding:5px'>
+		<button onclick="scan()">&#x21bb; Scan <a href="/">&lt;&lt;&lt;</a></button>
+		<p id='wl'></p>
+		<form method='post' action='/wifi/connect'>
+			<input id='s' name='n' length=32 placeholder='SSID'>
+			<br>
+			<input id='p' name='p' length=64 type='password' placeholder='password'>
+			<br>
+			<br>
+			<button type='submit'>Connect</button>
+		</form>
+		<br>
+		<!--
+		<button onclick="p('Start WPS?','/wifi/wps')">WPS Setup</button>
+		<br><br>
+		-->
+		<button onclick="p('Start AP mode?','/wifi/ap')">AP Mode</button>
+		<br><BR>
+		<button onclick="p('Reboot device?','/wifi/rst')">Reboot</button>
+		<br>
+		<a href="javascript:history.back()">Back</a> | 
+		<a href="/">Home</a>
+	</div>
+</body>
+
+</html>

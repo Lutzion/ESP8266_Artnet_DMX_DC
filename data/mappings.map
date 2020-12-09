@@ -11,6 +11,11 @@
 23,1
 24,1
 25,1
+### LKT
+# Pan/Tilt
+67,4
+# Pan/Tilt invert
+68,3
 ### IODA
 # X-Move
 166,11

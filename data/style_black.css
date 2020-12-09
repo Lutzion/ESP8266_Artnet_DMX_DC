@@ -13,5 +13,5 @@ input:hover{background:#FF7F00;}
 button{border:0;border-radius:0.3rem;background-color:#FF7F00;color:#FFFFFF;line-height:1.4rem;width:100%;}
 .c{text-align:center;}
 .q{float:right;width:64px;text-align:right;}
-.content{max-width:550px;margin:auto;padding:0px;}
+.content{max-width:750px;margin:auto;padding:0px;}
 .cr{font-size:medium;}
