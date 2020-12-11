@@ -25,7 +25,7 @@ If monitor shows too many sequence errors, maybe check your network configuratio
 
 Calling the web interface might create sequence errors, as the other functions stop for a short time! 
 
-## Settings  Dimmer curves / dmx mapping
+## Settings  Dimmer curves / dmx mapping and more
 ![Settings!](./media/Settings.png "Settings page")
 
 - universe: universe for Art-Net / sACN. For both cases the first universe is 0.
@@ -80,6 +80,10 @@ See the [details](HARDWARE.md)
 # Compiling the software
 See the [details](COMPILE.md)  
   
+# using dmxmapping  
+  
+Click the picture to watch the video.
+[![dmxmapping in action as video](./media/dmxmapping_pic2vid.jpg)](http://lutzion.de/media/dmxmapping_with_2_lasers.mp4)  
   
 # DISCLAIMER
 
